@@ -116,13 +116,13 @@ const App: React.FC = () => {
     return (
         <div className="bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white min-h-screen font-sans antialiased">
             <header className="bg-white dark:bg-gray-900 p-4 shadow-md print:hidden sticky top-0 z-10">
-                <div className="container mx-auto">
+                <div className="w-[90%] mx-auto">
                     <h1 className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">Gerador de Pedido de Exames</h1>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">Preencha o formulário para gerar o documento para impressão.</p>
                 </div>
             </header>
 
-            <main className="container mx-auto flex flex-col lg:flex-row p-4 gap-6">
+            <main className="w-[90%] mx-auto flex flex-col lg:flex-row p-4 gap-6">
                 <div className="lg:w-1/3 xl:w-1/4 print:hidden">
                     <div className="sticky top-24">
                         <Form formData={formData} setFormData={setFormData} />
