@@ -78,7 +78,7 @@ const App: React.FC = () => {
     }, [isSecondRequestActive]);
     
     useEffect(() => {
-        if (secondRequestData.requestedExams.split('\n').length <= 19) {
+        if (secondRequestData.requestedExams.split('\n').length <= 14) {
             setSecondExamLimitError(false);
         }
     }, [secondRequestData.requestedExams]);
@@ -99,7 +99,7 @@ const App: React.FC = () => {
 
         if (name === 'requestedExams') {
             const lines = value.split('\n');
-            if (lines.length > 19) {
+            if (lines.length > 14) {
                 setSecondExamLimitError(true);
                 return;
             }
@@ -133,7 +133,7 @@ const App: React.FC = () => {
                                 <div>
                                     <label htmlFor="requestedExams2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exames Solicitados:</label>
                                     <textarea name="requestedExams" id="requestedExams2" value={secondRequestData.requestedExams} onChange={handleSecondRequestChange} rows={4} className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                    {secondExamLimitError && <p className="text-red-500 text-xs mt-1">Limite de 18 exames atingido.</p>}
+                                    {secondExamLimitError && <p className="text-red-500 text-xs mt-1">Limite de 14 exames atingido.</p>}
                                 </div>
                                 <div>
                                     <label htmlFor="clinicalIndication2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Indicação Clínica:</label>
