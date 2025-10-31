@@ -74,8 +74,8 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
 
-            <section className="mt-auto text-sm">
-                <div className="flex items-baseline mt-2">
+            <section className="text-sm mt-4">
+                <div className="flex items-baseline">
                     <span className="font-bold">Indicação Clínica:</span>
                     <span className={`flex-1 ml-1 min-h-[1em] whitespace-pre-wrap break-words ${!formData.clinicalIndication ? 'border-b border-black' : ''}`}>{formData.clinicalIndication || ' '}</span>
                 </div>
@@ -89,7 +89,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
 
-            <footer className="text-[8px] mt-4 border-t border-black pt-1">
+            <footer className="text-[8px] mt-2 border-t border-black pt-1">
                 <p className="text-center">Rua 235 QD. 68 Lote Área, Nº 285, s/nº - Setor Leste Universitário, Goiânia - GO, 74605-050</p>
             </footer>
         </div>
@@ -106,19 +106,19 @@ const Preview: React.FC<PreviewProps> = ({ formData, showSecondCopy, isSecondReq
 
   return (
     <div id="printable-area" className="bg-white text-black p-4 mx-auto w-full max-w-[297mm] aspect-[297/210] shadow-2xl print:shadow-none print:p-0 print:max-w-full print:aspect-auto">
-        <div className="flex justify-start items-start gap-4 h-full">
-            <div className="w-[calc(50%-0.5rem)]">
+        <div className="flex justify-start items-stretch gap-4 h-full">
+            <div className="w-[calc(50%-0.5rem)] h-full">
                 <DocumentColumn formData={formData} />
             </div>
             
             {isSecondRequestActive && (
-                 <div className="w-[calc(50%-0.5rem)]">
+                 <div className="w-[calc(50%-0.5rem)] h-full">
                     <DocumentColumn formData={secondRequestFormData} />
                 </div>
             )}
 
             {!isSecondRequestActive && showSecondCopy && (
-                <div className="w-[calc(50%-0.5rem)]">
+                <div className="w-[calc(50%-0.5rem)] h-full">
                     <DocumentColumn formData={formData} />
                 </div>
             )}
