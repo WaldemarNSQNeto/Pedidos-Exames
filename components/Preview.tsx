@@ -10,8 +10,8 @@ interface PreviewProps {
 
 const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
     return (
-        <div className="flex flex-col border border-black p-2 h-full leading-tight font-sans">
-            <header className="border-b border-black mb-2 flex justify-center items-center" style={{ minHeight: '4.5rem' }}>
+        <div className="flex flex-col border border-black p-2 h-full leading-tight font-serif text-xs">
+            <header className="border-b border-black mb-1 flex justify-center items-center" style={{ minHeight: '3.5rem' }}>
                 <div className="h-12 flex justify-center items-center overflow-hidden">
                     <img 
                         src="https://boletim.hc.ufg.br/imagem/LogoEbserhTrans.png" 
@@ -21,9 +21,9 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </header>
 
-            <h1 className="text-center font-bold text-lg my-2">PEDIDO DE EXAMES</h1>
+            <h1 className="text-center font-bold text-base my-1">PEDIDO DE EXAMES</h1>
 
-            <section className="pb-1 text-sm">
+            <section className="pb-1">
                 <div className="flex items-end">
                     <span className="font-bold">Nome do paciente:</span>
                     <span className={`flex-1 ml-1 min-h-[1em] ${!formData.patientName ? 'border-b border-black' : ''}`}>{formData.patientName || ' '}</span>
@@ -47,7 +47,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
             
-            <section className="mt-2 mb-4 text-center grid grid-cols-3 border-t border-l border-black text-sm">
+            <section className="my-2 text-center grid grid-cols-3 border-t border-l border-black">
                 <div className="font-bold bg-gray-200 p-1 flex items-center justify-center border-b border-r border-black">Prontuário ou Nº de Atendimento</div>
                 <div className="font-bold bg-gray-200 p-1 flex items-center justify-center border-b border-r border-black">Setor de Origem</div>
                 <div className="font-bold bg-gray-200 p-1 flex items-center justify-center border-b border-r border-black">Nº do Leito de <br /> Internação</div>
@@ -56,7 +56,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 <div className="min-h-[2em] p-1 flex items-center justify-center border-b border-r border-black">{formData.bedNumber || ' '}</div>
             </section>
 
-            <section className="flex-grow text-sm">
+            <section className="flex-grow">
                 <h2 className="font-bold">Exames Solicitados:</h2>
                 <div className="min-h-[12em] p-1">
                     {formData.requestedExams && formData.requestedExams.trim() !== '' ? (
@@ -64,7 +64,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                             .split('\n')
                             .filter(line => line.trim() !== '')
                             .map((line, index) => (
-                                <div key={index}>
+                                <div key={index} className="leading-snug">
                                     <span className="font-bold">{`${index + 1}. `}</span>{line.trim()}
                                 </div>
                             ))
@@ -74,7 +74,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
 
-            <section className="text-sm mt-4">
+            <section className="mt-2">
                 <div className="flex items-baseline">
                     <span className="font-bold">Indicação Clínica:</span>
                     <span className={`flex-1 ml-1 min-h-[1em] whitespace-pre-wrap break-words ${!formData.clinicalIndication ? 'border-b border-black' : ''}`}>{formData.clinicalIndication || ' '}</span>
@@ -89,7 +89,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
 
-            <footer className="text-[8px] mt-2 border-t border-black pt-1">
+            <footer className="text-[8px] mt-auto border-t border-black pt-1">
                 <p className="text-center">Rua 235 QD. 68 Lote Área, Nº 285, s/nº - Setor Leste Universitário, Goiânia - GO, 74605-050</p>
             </footer>
         </div>
@@ -105,7 +105,7 @@ const Preview: React.FC<PreviewProps> = ({ formData, showSecondCopy, isSecondReq
   };
 
   return (
-    <div id="printable-area" className="bg-white text-black p-4 mx-auto w-[1123px] aspect-[297/210] shadow-2xl print:shadow-none print:p-0 print:w-full print:max-w-full print:aspect-auto">
+    <div id="printable-area" className="bg-white text-black p-4 mx-auto w-[1123px] aspect-[297/210] shadow-2xl print:shadow-none print:p-0 print:w-full print:h-full print:max-w-full print:aspect-auto">
         <div className="flex justify-start items-stretch gap-4 h-full">
             <div className="w-[calc(50%-0.5rem)] h-full">
                 <DocumentColumn formData={formData} />
