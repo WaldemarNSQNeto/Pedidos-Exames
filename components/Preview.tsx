@@ -10,7 +10,7 @@ interface PreviewProps {
 
 const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
     return (
-        <div className="flex flex-col border border-black p-2 h-full leading-tight">
+        <div className="flex flex-col border border-black p-2 h-full leading-tight font-sans">
             <header className="border-b border-black mb-2 flex justify-center items-center" style={{ minHeight: '4.5rem' }}>
                 <div className="h-12 flex justify-center items-center overflow-hidden">
                     <img 
@@ -105,7 +105,7 @@ const Preview: React.FC<PreviewProps> = ({ formData, showSecondCopy, isSecondReq
   };
 
   return (
-    <div id="printable-area" className="bg-white text-black p-4 mx-auto w-[1123px] aspect-[297/210] shadow-2xl font-serif print:shadow-none print:p-0 print:w-full print:max-w-full print:aspect-auto">
+    <div id="printable-area" className="bg-white text-black p-4 mx-auto w-[1123px] aspect-[297/210] shadow-2xl print:shadow-none print:p-0 print:w-full print:max-w-full print:aspect-auto">
         <div className="flex justify-start items-stretch gap-4 h-full">
             <div className="w-[calc(50%-0.5rem)] h-full">
                 <DocumentColumn formData={formData} />
