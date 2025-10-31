@@ -123,7 +123,7 @@ const App: React.FC = () => {
             </header>
 
             <main className="w-[95%] mx-auto flex flex-col lg:flex-row p-4 gap-6">
-                <div className="lg:w-1/3 xl:w-1/4 print:hidden">
+                <div className="lg:w-2/5 print:hidden">
                     <div className="sticky top-24">
                         <Form formData={formData} setFormData={setFormData} />
 
@@ -195,7 +195,7 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="preview-container lg:w-2/3 xl:w-3/4 bg-gray-400 dark:bg-gray-700 p-4 sm:p-6 rounded-lg overflow-x-auto">
+                <div className="preview-container lg:w-3/5 bg-gray-400 dark:bg-gray-700 p-4 sm:p-6 rounded-lg overflow-x-auto">
                     <Preview 
                         formData={formData} 
                         showSecondCopy={showSecondCopy}
