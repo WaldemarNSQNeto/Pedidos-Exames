@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FormData, RequestDetails } from './types';
-import Form from './components/Form';
-import Preview from './components/Preview';
+import { FormData, RequestDetails } from './types.ts';
+import Form from './components/Form.tsx';
+import Preview from './components/Preview.tsx';
 
 const formatDate = (value: string): string => {
     const digits = value.replace(/\D/g, '');
