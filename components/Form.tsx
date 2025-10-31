@@ -10,7 +10,7 @@ const Form: React.FC<FormProps> = ({ formData, setFormData }) => {
   const [examLimitError, setExamLimitError] = useState(false);
 
   useEffect(() => {
-    if (formData.requestedExams.split('\n').length <= 19) {
+    if (formData.requestedExams.split('\n').length <= 14) {
         setExamLimitError(false);
     }
   }, [formData.requestedExams]);
@@ -31,7 +31,7 @@ const Form: React.FC<FormProps> = ({ formData, setFormData }) => {
     const { name, value } = e.target;
     if (name === 'requestedExams') {
         const lines = value.split('\n');
-        if (lines.length > 19) {
+        if (lines.length > 14) {
             setExamLimitError(true);
             // Do not update state, blocking the user from adding more lines.
             return;
@@ -107,7 +107,7 @@ const Form: React.FC<FormProps> = ({ formData, setFormData }) => {
       <div>
         <label htmlFor="requestedExams" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exames Solicitados:</label>
         <textarea name="requestedExams" id="requestedExams" value={formData.requestedExams} onChange={handleChange} rows={4} className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        {examLimitError && <p className="text-red-500 text-xs mt-1">Limite de 18 exames atingido.</p>}
+        {examLimitError && <p className="text-red-500 text-xs mt-1">Limite de 14 exames atingido.</p>}
       </div>
 
       <div>
