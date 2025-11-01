@@ -89,7 +89,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 </div>
             </section>
 
-            <footer className="text-[8px] mt-2 border-t border-black pt-1">
+            <footer className="text-[8px] mt-auto border-t border-black pt-1">
                 <p className="text-center">Rua 235 QD. 68 Lote Área, Nº 285, s/nº - Setor Leste Universitário, Goiânia - GO, 74605-050</p>
             </footer>
         </div>
