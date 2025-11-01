@@ -56,7 +56,7 @@ const DocumentColumn: React.FC<{ formData: FormData }> = ({ formData }) => {
                 <div className="min-h-[2em] p-1 flex items-center justify-center border-b border-r border-black">{formData.bedNumber || ' '}</div>
             </section>
 
-            <section className="flex-grow text-sm">
+            <section className="text-sm">
                 <h2 className="font-bold">Exames Solicitados:</h2>
                 <div className="min-h-[12em] p-1">
                     {formData.requestedExams && formData.requestedExams.trim() !== '' ? (
