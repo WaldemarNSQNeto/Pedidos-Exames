@@ -188,7 +188,7 @@ const App: React.FC = () => {
                 <p>
                     ⚕️ Asklépios Soluções Médicas ⚕️<br />
                     Startup by Waldemar Neto - Interno Turma LXIX<br />
-                    V. Alfa 1.2. (02/11/2025)
+                    V. Alfa 1.3. (04/11/2025)
                 </p>
             </footer>
 
