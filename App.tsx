@@ -117,7 +117,7 @@ const App: React.FC = () => {
             <div className="flex-grow">
                 <header>
                     <div className="main-title-container">
-                        <img src="The-Rod-of-Asclepius2-V2.png" alt="Cajado de Asclépio" className="header-icon" />
+                        <img src="The-Rod-of-Asclepius2-V2.png" alt="Cajado de Asclépio" className="header-icon">
                         <hr className="header-divider" />            
                         <h1 className="text-3xl font-bold my-2">Solicitação de Pedido de Exames</h1>
                         <hr className="header-divider" />            
