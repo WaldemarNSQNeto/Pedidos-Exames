@@ -1,19 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FormData, RequestDetails } from './types.ts';
 import Form from './components/Form.tsx';
 import Preview from './components/Preview.tsx';
-
-const formatDate = (value: string): string => {
-    const digits = value.replace(/\D/g, '');
-    let formatted = digits;
-    if (digits.length > 2) {
-      formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    }
-    if (digits.length > 4) {
-      formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
-    }
-    return formatted;
-};
+import Toast from './components/Toast.tsx';
+import AdditionalRequestForm from './components/AdditionalRequestForm.tsx';
 
 const App: React.FC = () => {
     const getTodayDate = (): string => {
@@ -22,21 +12,6 @@ const App: React.FC = () => {
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const year = today.getFullYear();
         return `${day}/${month}/${year}`;
-    };
-
-    // Sample data kept for reference or potential future features
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const initialFormData: FormData = {
-        patientName: 'João da Silva',
-        dob: '15/05/1985',
-        sex: 'Masculino',
-        motherName: 'Maria da Silva',
-        recordNumber: '1234567',
-        originSector: 'Clínica Médica',
-        bedNumber: '201-A',
-        requestedExams: 'Hemograma completo\nTSH e T4 Livre\nGlicemia de Jejum',
-        clinicalIndication: 'Avaliação de rotina, paciente com histórico de hipotireoidismo.',
-        requestDate: getTodayDate(),
     };
     
     const emptyFormData: FormData = {
@@ -52,158 +27,178 @@ const App: React.FC = () => {
         requestDate: getTodayDate(),
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const initialSecondRequestData: RequestDetails = {
-        requestedExams: 'Ureia e Creatinina\nPerfil Lipídico Completo',
-        clinicalIndication: 'Monitoramento da função renal e risco cardiovascular.',
-        requestDate: getTodayDate(),
-    };
-
-    const emptySecondRequestData: RequestDetails = {
+    const emptyRequestDetails: RequestDetails = {
         requestedExams: '',
         clinicalIndication: '',
         requestDate: getTodayDate(),
     };
 
     const [formData, setFormData] = useState<FormData>(emptyFormData);
-    const [secondRequestData, setSecondRequestData] = useState<RequestDetails>(emptySecondRequestData);
-    const [showSecondCopy, setShowSecondCopy] = useState<boolean>(false);
-    const [isSecondRequestActive, setIsSecondRequestActive] = useState<boolean>(false);
-    const [secondExamLimitError, setSecondExamLimitError] = useState(false);
+    const [additionalRequests, setAdditionalRequests] = useState<RequestDetails[]>([]);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; key: number } | null>(null);
 
-    useEffect(() => {
-        if (isSecondRequestActive) {
-            setShowSecondCopy(false);
-        }
-    }, [isSecondRequestActive]);
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToast({ message, type, key: Date.now() });
+    };
     
-    useEffect(() => {
-        if (secondRequestData.requestedExams.split('\n').length <= 14) {
-            setSecondExamLimitError(false);
-        }
-    }, [secondRequestData.requestedExams]);
+    const handleAddRequest = () => {
+        setAdditionalRequests(prev => [...prev, { ...emptyRequestDetails }]);
+        showToast(`Pedido ${additionalRequests.length + 2} adicionado!`);
+    };
+
+    const handleDuplicateRequest = (requestToDuplicate: RequestDetails) => {
+        setAdditionalRequests(prev => [...prev, { ...requestToDuplicate }]);
+        showToast('Pedido duplicado com sucesso!');
+    };
+
+    const handleRemoveRequest = (index: number) => {
+        setAdditionalRequests(prev => prev.filter((_, i) => i !== index));
+        showToast(`Pedido ${index + 2} removido.`, 'error');
+    };
+
+    const handleAdditionalRequestChange = (index: number, updatedDetails: RequestDetails) => {
+        setAdditionalRequests(prev => 
+            prev.map((item, i) => (i === index ? updatedDetails : item))
+        );
+    };
 
     const handlePrint = (): void => {
-        window.print();
+        const printContainerEl = document.getElementById('printable-container');
+        const printStylesTemplate = document.getElementById('print-styles-template') as HTMLTemplateElement;
+
+        if (!printContainerEl || !printStylesTemplate) {
+            console.error('Elemento para impressão ou template de estilos não encontrados.');
+            alert('Ocorreu um erro ao tentar preparar a impressão. Por favor, recarregue a página.');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank', 'height=800,width=1200,menubar=no,toolbar=no,location=no,status=no');
+
+        if (printWindow) {
+            printWindow.document.write(`
+            <html>
+                <head>
+                <title>Imprimir Pedidos</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                ${printStylesTemplate.innerHTML}
+                </head>
+                <body>
+                ${printContainerEl.outerHTML}
+                </body>
+            </html>
+            `);
+
+            printWindow.document.close();
+            
+            printWindow.onload = () => {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        }
     };
 
     const handleClearForm = (): void => {
         setFormData(emptyFormData);
-        setSecondRequestData(emptySecondRequestData);
-        setIsSecondRequestActive(false);
-        setShowSecondCopy(false);
+        setAdditionalRequests([]);
+        showToast('Formulário limpo com sucesso!');
     };
     
-    const handleSecondRequestChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        const { name, value } = e.target;
-
-        if (name === 'requestedExams') {
-            const lines = value.split('\n');
-            if (lines.length > 14) {
-                setSecondExamLimitError(true);
-                return;
-            }
-        }
-
-        if (name === 'requestDate') {
-          const formattedValue = formatDate(value);
-          setSecondRequestData(prev => ({...prev, [name]: formattedValue}));
-        } else {
-          setSecondRequestData(prev => ({...prev, [name]: value}));
-        }
-    }
-
     return (
-        <div className="bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white min-h-screen font-sans antialiased">
-            <header className="bg-white dark:bg-gray-900 p-4 shadow-md print:hidden sticky top-0 z-10">
-                <div className="w-[95%] mx-auto">
-                    <h1 className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">Gerador de Pedido de Exames</h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">Preencha o formulário para gerar o documento para impressão.</p>
-                </div>
-            </header>
-
-            <main className="w-[95%] mx-auto flex flex-col lg:flex-row p-4 gap-6">
-                <div className="lg:w-2/5 print:hidden">
-                    <div className="sticky top-24">
-                        <Form formData={formData} setFormData={setFormData} />
-
-                        {isSecondRequestActive && (
-                             <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl space-y-4 mt-6">
-                                <h2 className="text-lg font-semibold border-b border-gray-300 dark:border-gray-700 pb-2 mb-4">2º Pedido - Detalhes da Solicitação</h2>
-                                <div>
-                                    <label htmlFor="requestedExams2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exames Solicitados:</label>
-                                    <textarea name="requestedExams" id="requestedExams2" value={secondRequestData.requestedExams} onChange={handleSecondRequestChange} rows={4} className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                    {secondExamLimitError && <p className="text-red-500 text-xs mt-1">Limite de 14 exames atingido.</p>}
-                                </div>
-                                <div>
-                                    <label htmlFor="clinicalIndication2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Indicação Clínica:</label>
-                                    <textarea name="clinicalIndication" id="clinicalIndication2" value={secondRequestData.clinicalIndication} onChange={handleSecondRequestChange} rows={3} className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                </div>
-                                <div>
-                                    <label htmlFor="requestDate2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data da Solicitação:</label>
-                                    <input type="text" name="requestDate" id="requestDate2" value={secondRequestData.requestDate} onChange={handleSecondRequestChange} placeholder="DD/MM/AAAA" className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                </div>
-                             </div>
-                        )}
-
-                        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-xl mt-6 space-y-3">
-                            <label htmlFor="second-request-checkbox" className="flex items-center cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    id="second-request-checkbox"
-                                    className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                    checked={isSecondRequestActive}
-                                    onChange={() => setIsSecondRequestActive(!isSecondRequestActive)}
-                                />
-                                <span className="ml-3 font-medium text-gray-700 dark:text-gray-300">Adicionar 2º Pedido (diferente)</span>
-                            </label>
-
-                            <label htmlFor="two-copies-checkbox" className={`flex items-center transition-opacity ${isSecondRequestActive ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                <input 
-                                    type="checkbox" 
-                                    id="two-copies-checkbox"
-                                    className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    checked={showSecondCopy}
-                                    onChange={() => setShowSecondCopy(!showSecondCopy)}
-                                    disabled={isSecondRequestActive}
-                                />
-                                <span className="ml-3 font-medium text-gray-700 dark:text-gray-300">Imprimir em duas vias (idênticas)</span>
-                            </label>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 mt-6">
-                            <button
-                                onClick={handlePrint}
-                                className="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex items-center justify-center gap-2"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                </svg>
-                                Imprimir Pedido
-                            </button>
-                            <button
-                                onClick={handleClearForm}
-                                title="Limpar Formulário"
-                                aria-label="Limpar Formulário"
-                                className="flex-shrink-0 bg-red-500 hover:bg-red-600 text-white font-bold p-3 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
+        <div className="text-gray-900 min-h-screen font-sans antialiased flex flex-col">
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
+            <div className="flex-grow">
+                <header>
+                    <div className="main-title-container">
+                        <img src="/The-Rod-of-Asclepius2-V2.png" alt="Cajado de Asclépio" className="header-icon" />
+                        <hr className="header-divider" />            
+                        <h1 className="text-3xl font-bold my-2">Solicitação de Pedido de Exames</h1>
+                        <hr className="header-divider" />            
                     </div>
-                </div>
+                </header>
 
-                <div className="preview-container lg:w-3/5 bg-gray-400 dark:bg-gray-700 p-4 sm:p-6 rounded-lg overflow-x-auto">
-                    <Preview 
-                        formData={formData} 
-                        showSecondCopy={showSecondCopy}
-                        isSecondRequestActive={isSecondRequestActive}
-                        secondRequestData={secondRequestData}
-                    />
+                <div id="app-container">
+                    <main>
+                        <Form 
+                            formData={formData} 
+                            setFormData={setFormData} 
+                            showToast={showToast} 
+                            onDuplicate={handleDuplicateRequest}
+                        />
+
+                        {additionalRequests.map((requestData, index) => (
+                            <AdditionalRequestForm
+                                key={index}
+                                index={index}
+                                data={requestData}
+                                onChange={handleAdditionalRequestChange}
+                                onRemove={handleRemoveRequest}
+                                onDuplicate={handleDuplicateRequest}
+                                showToast={showToast}
+                            />
+                        ))}
+
+                        <div className="p-4 mt-6 border-t border-gray-200 space-y-4">
+                            <button
+                                type="button"
+                                onClick={handleAddRequest}
+                                className="w-full bg-green-100 hover:bg-green-200 text-green-800 font-bold py-3 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Adicionar Novo Pedido
+                            </button>
+                        
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex items-center justify-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    Imprimir Pedidos
+                                </button>
+                                <button
+                                    onClick={handleClearForm}
+                                    title="Limpar Formulário"
+                                    aria-label="Limpar Formulário"
+                                    className="flex-shrink-0 bg-red-500 hover:bg-red-600 text-white font-bold p-3 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </main>
                 </div>
-            </main>
+            </div>
+
+            <footer className="site-footer">
+                <hr className="footer-divider" />
+                <p>
+                    ⚕️ Asklépios Soluções Médicas ⚕️<br />
+                    Startup by Waldemar Neto - Interno Turma LXIX<br />
+                    V. Alfa 1.2. (02/11/2025)
+                </p>
+            </footer>
+
+            {/* Container de pré-visualização para impressão (invisível) */}
+            <div style={{ display: 'none' }}>
+                <Preview 
+                    formData={formData} 
+                    additionalRequests={additionalRequests}
+                />
+            </div>
         </div>
     );
 };
